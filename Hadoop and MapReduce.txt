@@ -1,0 +1,373 @@
+
+
+
+
+
+**************************   UNIT 1  Hadoop Intro       *************************************
+
+Definition of Big Data:
+its data that is too big to be processed on a single machine
+but now a daya people are using lesser amountoff data in hadoop and getting great result.
+
+
+challenges with big data:
+data created vey fast
+daat coming from various diff sources i diff formats
+
+
+
+3 Vs in Big data:
+volume variety and velocity
+
+
+volume: amount of data being stored like logs,sales info, storing TB of data in storage area network
+variemty: variety of data is getting stored over SAN for idff purpose that could be utilized for better use
+velocity:
+ the speedat which the daat needst o be availble for processing
+
+
+In terms of Volume:
+to store all thse volume of data from transcation,logs,business, users, sensor,mdeical, and socila
+ we need enormous amount of space to store them.Hadoop provides that facility
+
+
+Variety:
+problem with all thses data are nst of them is semi structured od unstructured so we cannot use them 
+with relational DBMS
+
+good about haddop is it dosent care what format you are storing your data like txt, mp3,etc 
+and can process those data
+
+
+
+if a truck needs to reach a house but he has less fuel, or he has differetnt route which is longer than the shortest route tothe same house
+or anything else.all thgese ticked parameter helps is coming up with a better decion..GPS,current location, traffic condition,etc
+
+
+
+Velocity:
+speed at which data arrives ready to be processed.
+TB/day data every day and if we an't store as it arrives all of them we may lost it.
+
+ecommerce data store data for better recomendationand user experiemce
+
+
+
+Hadoop :
+stores data in HDFS and a way to process data with map reduce
+key concept is is we solit the data across a collection of machine called clusters
+so when we want to process the dat we retrieve fromt where it is stored in cluster rather than from central storage system, so we can process it in place.
+we start from small numner of cluseter and frow as the data grows
+
+
+
+Hadoop Ecosystem:
+Hadoop is primay build around HDFS and Mapresuce but over time many thiugs hav egrown arunf it suppoirting hadoop. we call it Hadoop ecosystem
+someofthem are build to make data load easier to hadoop while lot are desined are easier to use.
+Map reduce : java/python.perl
+now lot pf people can't code and can write sql queries or they want a way to plug there business intelligence tool into hadoop.
+so for all thse readon buch of other open sourece projects are build to query the data from HDS...
+
+Hive: its similar to sql like auery and iwll beconverted  internally to Map reduce to run over HDFS
+Pig : allow U to write wuery in scripting language which will then be cnverted to Map reduce
+probelm with thsea re they are first converted to map reduce and can take considerable amount of time, so Impala was build
+
+
+Impala : its like sql queries but created to directly access data from HDFS(unlike Pig and Hive) instead of converting them first into map reduce
+		it is optimized fro low latency query. its query runs much faster than Hive but hive is optimzed used to run log batch processing Jobs over HDFS
+
+
+Sqoop : It takes data from RDBSM and put the data in HDFS in delimited manner so tha it can be processed
+Flume :  It injects data into HDFS as it is generated for processing in HDFS
+HBase : real time databse bui;t on top of HBase
+Hue :  its a graphical fntend to the cluster
+oozie : is a work flow management tool
+Mahout : is a machine learning library
+
+CDH : cloudera distribution using apache hadoop..
+		buid by cloudera.. packaged(all ecosystem component packaged) and free and open source
+		reason : to make such a comlex ecosytem work with each soterh with so much of open source lib, we need some way yo manage the ecosystem effciently
+
+
+
+
+
+**************************          UNIT 2 :  Hadoop and mapreduce       ****************************
+Hadoop and mapreduce
+
+Hadoop Distributed file system : much like any other file system. but its imporaant to understand whats gone underneith of how it works
+
+HDFS : 
+lets say U have afile name mydat.txtof 150 MB. whena file is loaded in HDFS it is broken down in different chucks of size 64MB(default size) called 
+blocks (blk_1,blk_2,...).
+each of these block then were sent to different clusters. 
+e the cluster is running a daemon node (data node )
+there are two type sof node in clusters 1. node cluster which holds the data and 2. name clsuter which hodls the record of where each data block from same file mydata.txt is stored in what all clusters.
+
+
+Data Redundancy :
+
+what if one node fail, entire clocks stred there is gone.
+so toovercome this hadoop replicate each block 3 times in diff nodes on cluter
+
+
+Name Node high availbility:
+for a logn itme name node in the single point of failure on hadoop.
+1. if name Node fail our network is inaccessible
+2. but if the meta ont eh namenode fails we ahve lost our data fro ever. no way to know which blocks belongto which file ven though we have the data
+
+to over come this we stoe the name node elase were also on the file system
+
+or with master slave configuration
+
+
+
+
+HDFS demo:
+all the command which interact with hadoop file system starts with "hadoop fs"
+
+1. to put a file from loca  dir to hadoop : hadoop fs -put pusrachse.txt
+since we are not providing any dstnation file name it wil be uploadedw ith the same file name
+
+
+2. to check if that file is there or not in hadoop:
+hadoop fs -ls
+
+3. to check lat few lines of the file
+hadoop fs -tail purcse.txt
+hadoop fs -mv purchase.txt ... to diaplay all
+hadoop fs -rm purchase.txt
+hadoop fs -mkdir myInoutDir
+hadoop fs -put purchase.txt myInoutDir ..put the file in diff directory
+
+
+
+mapreduce processing:
+it breaks the large file in chunks and run processing on them paralley
+
+
+let's say we have big books of sales which contains different sales made from the store.we need to cumn all the valus from individual store
+lets say for instance n example we ahev miami two times so those value of sales should get added
+
+
+
+Hash Tables:
+tradationally we can solve this using hashtable where key is the store locationa and value is the total sales made bythat store.
+
+but couple of problems:
+1.we will run out of memory with large data size
+2. it will take too long.
+lets check how MapReduce can help us 
+
+How to do it MapReduce :
+so instead of one process reading it, we will divede them into mappers and reducers.
+lets say 5:2 ratio. now all of those 5 mappers work is to count there individual file and gropu the data accorsing to the location=>sales
+then we will separate the reducers by location i.e reducer1 will take care of location LA,miami and reducer 2 will take care of other 2 location.
+then the reducers will do there mapping and send the final result.
+
+
+SUMMARY FO MAP REDUCE
+Mappers: are each individual program and deal with relatively small amount of data and work in parallel
+we call those outputs as intermediate records and that's what we write down on our index cards
+Hadoop deals with all data in form of key and value. so these intermediate records are key and value. Inour case {storeName : sales_total_for_each_store}
+
+once the mappers are finished, a phase of MR  shuffle and sort takes place 
+Shuffle : is the movement of the intermediate records from the mappers to the reducers
+Sort : reducers will organize the pile of index cards into sorted orders. each reducers work on one set of records ata time or one pile of cards.
+It gets the key and list of all the values..In our case key = store and values= all the sales value for that store as list
+It processes those values in some way In our case it was addition and then it writes out the final result
+
+
+Daemons of MapReduce
+Daemons : a piece of code running all the time
+so there are two daemons already running on the clustes namely data node and name node
+
+Job tracker : when U submit a mpa reduce job it is handled by Job tracker that split the work into mappers and reducers.
+those amppers and reducers will be running on other cluster node
+
+Running the actual mapp and reduce task is handled by a daemon called task trackers. it runs on each and every node of the cluster. 
+Since the task tracker runs on the same machine as the data node,the hadoop framework would be able to have Map tasks runs diectly on the pieceof data  stored ont he machine 
+this will save a lot of network traffic
+Each mapper will work on a chuck of data, by default hadoop will use input_blk stored in data node as input_split for mappers
+It will try to make the mappers work on data on the same machine or else it has to be stream from some other node to that data node. This happens when the task tracker on that machine could already be busy with some otehr map work in which case a different node will be chosen to process the that block, which will then be stream to that node for processing.
+Happens rarely.
+
+then mappers will produce there intermedite data and pass it to the reducers(shuffle and sort) which eventually write the result to the HDFS
+
+
+Running a Job:
+
+we can write map reduce in any language using Hadoop streaming. we have written in python
+
+hs {mapper script} {reducer script} {input_file} {output directory}
+
+myoutput directory muct not laready exist else hadoop will not run the command. uit helps not overriting existing dat in thecluster.
+
+we have a file called mapper.py and reducer.py in our hadoop file syatem. we can run it by providing mapper and reducers and the output directlry to write the file
+
+To get data from hadoop and put in locally :  use get
+hadoop fs -get jobOutputDir/fileName.txt
+
+
+Simplifying Things
+the actual hadoop command to run map reduce is quiet verbose. so we have an alias in our package
+hs mapper.py reducer.py myinput myoutput
+
+
+
+
+Processing logs info to find out page hit count
+mappers will read lines of the logs and make a key value pair with key  = paheName and value = 1
+then it will pass to the reducer which will add all the values fora specfic pageName and return the count.
+
+
+Other Problems:
+recomendations, fraud detection, item classification,etc
+major challenge working with hadoop is to think of the problem in terms of MapReduce.it comes with practice.
+
+
+Download Hadoop and package, oracle virtual box,etc
+https://docs.google.com/document/d/1v0zGBZ6EHap-Smsr3x3sGGpDW-54m82kDpPKC2M6uiY/pub
+https://docs.google.com/document/d/1MZ_rNxJhR4HCU1qJ2-w7xlk2MTHVqa9lnl_uj-zRkzk/pub
+
+yahoo developer: Hadoop lessons
+https://developer.yahoo.com/hadoop/tutorial/module5.html#partitioning
+
+**************************          UNIT 3        *************************************
+
+To store 100TB of data in a hadoop cluster you would need 300TB of raw disk space by default
+
+whta will happen if one of the node running the dataNode daemon on the cluster fails?
+	Hadoop will automatically re-replicate any blocks which stored on that node
+
+What could be done to reduce thelikelihood of the problems related to NameNode failure?
+	configure the namenode to store its metadata ina second location using NFS
+	consfigure a standby Namenode
+	make sure the nameNode is running on high end hardware..it has lower failure rate
+
+why hadoop block size set to 64MB by default,when most filesystem have block size of 16KB or less?
+	there would be huge number of blocks throughout cluster, which causes the NameNode to manage an enormous amount of metedata
+	Sice we need a Mapper for each block that we want to process,there would be a lot of Mappers,each processing a piee of data which isn't efficient
+
+
+**************************          UNIT 4  Map Reduce Code      *************************************
+
+
+import sys
+
+def mapper():
+
+    for line in sys.stdin:
+        
+        # strip off extra whitespace, split on tab and put the data in an array
+        data = line.strip().split("\t")
+
+        # what if there are not exactly 6 fields in that line?
+        l = len(data)
+        if(l > 6 or l<6 ):
+            continue
+        
+        date, time, store, item, cost, payment = data
+        
+        # Now print out the data that will be passed to the reducer
+        print "{0}\t{1}".format(store, cost)
+        
+test_text = """2013-10-09\t13:22\tMiami\tBoots\t99.95\tVisa
+			2013-10-09\t13:22\tNew York\tDVD\t9.50\tMasterCard
+			2013-10-09 13:22:59 I/O Error
+			^d8x28orz28zoijzu1z1zp1OHH3du3ixwcz114<f
+			1\t2\t3
+			"""
+
+# This function allows you to test the mapper with the provided test string
+def main():
+	import StringIO
+	sys.stdin = StringIO.StringIO(test_text)
+	mapper()
+	sys.stdin = sys.__stdin__
+
+
+
+So reducer will receive line by line from mapper is sorted format..i.e
+Miami 10
+Miami 23
+Miami 54
+La 23
+La 34
+Nevdia 98
+
+all M > L > N.... so that reducer can easily group the data
+
+
+Putting It All Together
+cat testfile | ./mapper.py | sort | ./reducer.py
+head -50 ../data/purchase.txt > testfile
+cat testfile | .mapper.py
+
+
+Hadoop jobs also have a user interface  at localhost:50030/jobtracket.jsp
+
+***************************************          *******************************************
+
+
+
+
+To open file in hadoop cluster
+hadoop fs -ls myoutputdir
+to see all doc insde the cluster
+hadoop fs -ls
+
+to see conten insde a file in hadoop cluster:
+hadoop fs -cat outputdir/file
+
+to pull data from hadoop cluster to local system
+hadoop fs -get output1/oart-00000 mylocalfile.txt ....mylocafile.txt dosen't exust locally
+
+training@localhost: is your local system..even though U rrunning it inside a vm its local pc and hadoop fs is your hadoop cluster
+
+
+
+
+https://highlyscalable.wordpress.com/2012/02/01/mapreduce-patterns/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

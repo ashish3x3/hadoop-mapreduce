@@ -1,0 +1,116 @@
+
+https://docs.google.com/document/d/1v0zGBZ6EHap-Smsr3x3sGGpDW-54m82kDpPKC2M6uiY/edit#
+https://docs.google.com/document/d/1MZ_rNxJhR4HCU1qJ2-w7xlk2MTHVqa9lnl_uj-zRkzk/pub
+
+1. download entire HDFS package from  http://content.udacity-data.com/courses/ud617/Cloudera-Udacity-Training-VM-4.1.1.c.zip
+extract it in D drive or so , we need to refer ot the extrated location later..so don't extract it in download itself..its 4GB file
+
+2. download virtual box from  https://www.virtualbox.org/wiki/Downloads
+download .exe
+run it..after installation is done..
+click create new... 
+type name Hadoop --> OS: linux --> type ubuntu --> selct use existing gard drive --> selct vmdk file location: choose extrated virtaul box location,it has vmdk file..
+click create..
+right click on newly created OS..go to setting--go to system --> tick enable Bae
+if it is coming in grey it means U r still running OS, stop it first then do this..
+then go to Network--> change attached to: bridge adaptor..
+
+now run vbox..
+U ll be taken to console..type ifconfig..take the inet addr:192.168.0.14..we need this to connect o this machine from windows putty
+
+
+3.Download putty from http://www.putty.org/
+
+go to session:
+enter the ip adder you got when enter ifconfig on virtualbox.. here its 192.168.0.14
+ssh port 22
+press connect
+it will open the console for you in putty asking login as:
+enter training
+it will show trainig@192.168.0.14 password: 
+enter training as password again
+now U r connected to virtual box from windows using ssh
+[training@localhost ~]$
+
+
+for setting up more detail:
+https://mediatemple.net/community/products/dv/204404604/using-ssh-in-putty-
+
+
+
+
+
+To open file in hadoop cluster
+hadoop fs -ls myoutputdir
+to see all doc insde the cluster
+hadoop fs -ls
+
+to see conten insde a file in hadoop cluster:
+hadoop fs -cat outputdir/file
+
+to pull data from hadoop cluster to local system
+hadoop fs -get output1/oart-00000 mylocalfile.txt ....mylocafile.txt dosen't exust locally
+
+training@localhost: is your local system..even though U rrunning it inside a vm its local pc and hadoop fs is your hadoop cluster
+
+
+
+to simulate end of input press ctrl+D
+since our mapper is reading from system readinputwe can runthe command and strt typing the tets file in format it requires and test its execution before running in on hadoop..
+
+
+
+Now I can pipe first 50 lines fro the purchases.txt into a new file and pip that file as input to mapper.py
+
+haed -50 ../data/purchases.txt > testfile
+cat testfile | ./mapper.py
+
+
+remember mapper output is sorted by the hadoop framework
+
+we can test the entire flow now..only gap is that hadoop framework sort the intermediate output before sending it to the reducer.we can use linux sort for this purpose
+
+cat textfile | ./mapper.py | sort | ./reducer.py
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
